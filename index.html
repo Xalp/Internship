@@ -1,18 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>React and Spring Boot</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.0/react.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.0/react-dom.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
-</head>
-<body>
-    <div id='root'></div>
-    <script type="text/babel">
-        ReactDOM.render(
-                <h1>Test</h1>, document.getElementById('root')
-        );
-    </script>
-</body>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Add React in One Minute</title>
+  </head>
+  <body>
+
+    <h2>First try on React</h2>
+
+    <!-- We will put our React component inside this div. -->
+    <div id="container"></div>
+
+    <!-- Load React. -->
+    <!-- Note: when deploying, replace "development.js" with "production.min.js". -->
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+
+    <!-- Load our React component. -->
+    <script src="clickme.js"></script>
+      
+    <h1>
+          Nice Try Have Fun!
+    </h1>
+  </body>
 </html>
