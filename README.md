@@ -1,2 +1,2 @@
-# Internship
+# Simple&Fun React
 Internship work😊
