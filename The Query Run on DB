@@ -1,0 +1,104 @@
+name_space.pod_name
+
+pending/succeeded/failed -> no resources used
+
+Dashboard
+
+0. Making a View of the newest pods and nodes
+ for pods:
+ 
+CREATE or REPLACE VIEW pod AS
+select * from (
+    Select
+        start_time AS start_time,
+       image_version AS image_version,
+       phase AS phase,
+       image_repo AS image_repo,
+       host_ip AS host_ip,
+       pod_name AS pod_name,
+       id AS id,
+       pod_ip AS pod_ip,
+       rl_cpu AS rl_cpu,
+       rl_memory AS rl_memory,
+       added_time AS added_time,
+       creation_timestamp AS creation_timestamp,
+       container_name AS container_name,
+       rr_memory AS rr_memory,
+       rr_cpu AS rr_cpu,
+       namespace AS namespace,
+       Rank() over (partition by pod_name order by added_time ) RankOrder
+    From pods
+) pods
+where RankOrder = 1;
+
+ for nodes:
+ 
+ CREATE or REPLACE VIEW node AS
+ select * from (
+ SELECT memory AS memory,
+       volumes_attached AS volumes_attached,
+       id AS id,
+       voluems_in_use AS voluems_in_use,
+       added_time AS added_time,
+       internalip AS internalip,
+       attachable_disk AS attachable_disk,
+       hostname AS hostname,
+       max_pods AS max_pods,
+       cpu AS cpu,
+       Rank() over (partition by internalip order by added_time ) RankOrder
+FROM nodes
+) nodes
+where RankOrder = 1;
+
+
+
+1. Making a View of Space & Remaining Space:
+
+CREATE or REPLACE VIEW SPACE_CPU AS
+    SELECT
+        "host_ip",
+	   SUM (rr_cpu) AS total_cpu,
+       SUM (rr_memory) AS total_memory
+    FROM
+	   "pod"
+    WHERE phase IN ('Running','Terminating')
+    GROUP BY
+	   "host_ip";
+       
+       
+       
+2. Making a View of All info:
+
+CREATE or REPLACE VIEW eve AS
+    SELECT
+        "host_ip",
+	    total_cpu,
+        total_memory,
+        attachable_disk,
+        cpu,
+        memory,
+        max_pods,
+        hostname,
+        internalip,
+        volumes_attached,
+        voluems_in_use,
+        (attachable_disk - volumes_attached) AS volumes_left,
+        (cpu - total_cpu) AS CPU_left,
+        (memory - total_memory) AS Memory_left
+    FROM
+	    public."space_cpu", public."node"
+    WHERE
+        host_ip = internalip;
+        
+3. For the namespace,
+
+
+CREATE or REPLACE VIEW NS_USE AS
+    SELECT
+        "namespace",
+	   SUM (rr_cpu) AS total_cpu,
+       SUM (rr_memory) AS total_memory
+    FROM
+	   "pod"
+    GROUP BY
+	   "namespace";
